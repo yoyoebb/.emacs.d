@@ -1,0 +1,121 @@
+;; For my language code setting (UTF-8)
+(setq current-language-environment "UTF-8")
+(setq default-input-method "chinese-py")
+(setq locale-coding-system 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(set-selection-coding-system 'utf-8)
+(prefer-coding-system 'utf-8)
+
+;; 关闭菜单栏、工具栏、滑动块
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+
+;;默认开启全屏
+(setq initial-frame-alist (quote ((fullscreen . maximized))))
+
+;;默认页面显示scratch，而不是帮助页面
+(setq inhibit-splash-screen t)
+
+;;显示行号
+(global-linum-mode 1)
+
+;;高亮光标所在行
+(global-hl-line-mode 1)
+
+;; 当光标选择一段文字后，输入新的内容时替换光标所选内容，而不是在后面插入
+(delete-selection-mode 1)
+
+;; 更好的帮助
+(global-set-key (kbd "C-h C-f") 'find-function)
+(global-set-key (kbd "C-h C-v") 'find-variable)
+(global-set-key (kbd "C-h C-k") 'find-function-on-key)
+
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+(recentf-mode 1)
+(setq recentf-max-menu-items 25)
+(add-to-list 'recentf-exclude (expand-file-name "~/org_html/.*"))
+(add-to-list 'recentf-exclude (expand-file-name "~/.emacs.d/elpa/.*"))
+(global-set-key (kbd "C-x C-r") 'recentf-open-files)
+
+;; 使用monokai主题
+(use-package monokai-theme
+  :config (load-theme 'monokai 1))
+
+;; 设置光标形状，只有窗口模式才生效，另外该变量是buffer-local，需要setq-default
+(setq-default cursor-type 'bar)
+
+;;;中文与英文字体等宽设置
+(set-face-attribute 'default nil :font "Monaco 14")
+;; Chinese Font
+(dolist (charset '(kana han symbol cjk-misc bopomofo))
+        (set-fontset-font (frame-parameter nil 'font)
+        charset
+        (font-spec :family "WenQuanYi Micro Hei Mono" :size 16)))
+
+;; 高亮显示匹配的括号
+(add-hook 'emacs-lisp-mode-hook 'show-paren-mode)
+
+(use-package org
+  :init 
+    (setq org-src-fontify-natively t)  ;; 设置org代码高亮，导出代码高亮还需要htmlize插件
+    (setq org-support-shift-select t)  ;; 允许在org-mode中通过shift选择多行
+  :hook (org-mode . (lambda()
+	    (visual-line-mode)
+	    (setq word-wrap nil)))
+)
+
+(use-package web-mode
+  :mode (
+    ("\\.html\\'" . web-mode)
+    ("\\.htm\\'" . web-mode)
+    ("\\.css\\'" . web-mode)
+  )
+)
+
+(use-package js2-mode
+  :mode (
+    ("\\.js\\'" . js2-mode)
+    ("\\.vue\\'" . js2-mode)
+  )
+)
+
+(use-package company
+    :config (global-company-mode 1)) 
+
+(use-package company-web
+    :ensure t
+    :bind (:map web-mode-map ("C-'" . company-web-html))
+)
+
+(use-package smartparens
+  :config (smartparens-global-mode 1))
+
+(use-package swiper
+  :init 
+  (setq ivy-use-virtual-buffers t)
+  (setq enable-recursive-minibuffers t)
+
+  :bind
+  (("C-s" . swiper)
+   ("C-c C-r" . ivy-resume)
+   ("<f6>" . ivy-resume)
+   ("M-x" . counsel-M-x)
+   ("C-x C-f" . counsel-find-file)
+   ("C-h f" . counsel-describe-function)
+   ("C-h v" . counsel-describe-variable)
+   ("C-h l" . counsel-find-library)
+  )
+
+  :config
+  (ivy-mode 1))
+
+(use-package popwin
+  :config (popwin-mode 1)
+)
+
+(use-package org-bullets
+  :ensure t
+  ;;:config (add-hook 'org-mode-hook 'org-bullets-mode))
+  :hook (org-mode . org-bullets-mode))
